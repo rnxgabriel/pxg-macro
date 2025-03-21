@@ -2,28 +2,25 @@ import mouse
 import keyboard
 import time
 
-from core.Configure import Configure
 from core.Healing import Healing
 
-
 class Attack:
-  def __init__(self, healingInstance: Healing, combo_keys: list[keyboard._Key], medicine = False):
-    self.healingInstance = healingInstance
+  """
+  Classe responsável por executar combos e acionar o uso de medicine durante o ataque.
+  """
+  def __init__(self, healing_instance: Healing, combo_keys: list, medicine=False):
+    self.healing_instance = healing_instance
     self.combo_keys = combo_keys
     self.medicine = medicine
-    pass
 
-  def use_medicine(self):
-    print("Deseja utilizar medicine ? [Y/N]")
-    if(keyboard.read_key() == 'y' or keyboard.read_key() == 'Y'):
-      self.medicine = True
-    pass
-
-  def use_combo(self):
-    for i in self.combo_keys:
-      if self.medicine: self.healingInstance.medicine()
-      keyboard.press_and_release(i)
-      time.sleep(0.2)
-    pass
-  
-  pass
+  def perform_combo(self):
+    """
+    Executa o combo, pressionando cada tecla da lista combo_keys, opcionalmente usando medicine.
+    """
+    print(f"⏳ Executando combo...")
+    for key in self.combo_keys:
+      self.healing_instance.medicine() if self.medicine else None
+      keyboard.press_and_release(key)
+      time.sleep(0.6)
+    self.healing_instance.revive()
+    print("✅ Combo finalizado.")
