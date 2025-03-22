@@ -18,8 +18,9 @@ class Attack:
     Executa o combo, pressionando cada tecla da lista combo_keys, opcionalmente usando medicine.
     """
     print(f"⏳ Executando combo...")
+    self.healing_instance.medicine() if self.medicine else None
     for key in self.combo_keys:
-      self.healing_instance.medicine() if self.medicine else None
+      if key == self.combo_keys[1]: self.healing_instance.medicine()
       keyboard.press_and_release(key)
       time.sleep(0.6)
     self.healing_instance.revive()
