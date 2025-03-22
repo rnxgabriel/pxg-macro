@@ -1,7 +1,6 @@
 import keyboard
 import time
 
-from core.HotkeyStorage import HotkeyStorage
 from core.Attack import Attack
 from core.Healing import Healing
 from core.Configure import Configure
@@ -19,7 +18,7 @@ def main():
   macro_revive_key, macro_combo_key = configurator.get_macro_keys()
 
   healing = Healing(revive_key, medicine_key, pokeball_key, position)
-  attack = Attack(healing, combo_keys)
+  attack = Attack(healing, combo_keys, True)
 
   print("✅ Macro pronto! Pressione as teclas configuradas ou ESC para sair.")
 
