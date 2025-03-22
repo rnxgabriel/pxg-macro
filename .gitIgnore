@@ -1,4 +1,10 @@
+__pycache__
 .venv
 .vscode
+
+build
+dist
+.sh
+.spec
+
 hotkeys.json
-__pycache__
