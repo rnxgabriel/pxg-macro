@@ -20,7 +20,7 @@ def main():
   healing = Healing(revive_key, medicine_key, pokeball_key, position)
   attack = Attack(healing, combo_keys, True)
 
-  print("✅ Macro pronto! Pressione as teclas configuradas ou ESC para sair.")
+  print("✅ Macro pronto! Pressione as teclas configuradas ou ctrl+ESC para sair.")
 
   try:
     while True:
@@ -32,7 +32,7 @@ def main():
         print("[LOG] Combo iniciado via macro!")
         attack.perform_combo()
 
-      if keyboard.is_pressed('esc'):
+      if keyboard.is_pressed('ctrl+esc'):
         print("[LOG] Encerrando macro...")
         break
 
