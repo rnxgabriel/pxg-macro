@@ -2,3 +2,9 @@
 .vscode
 hotkeys.json
 __pycache__
+
+dist
+build
+
+config.json
+*.spec

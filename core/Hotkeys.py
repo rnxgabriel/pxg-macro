@@ -1,11 +1,10 @@
+import json
 import keyboard
 import mouse
 
-from core.HotkeyStorage import HotkeyStorage
 
 class Hotkeys:
   def __init__(self):
-    self.storage = HotkeyStorage()
     self._position = None
 
     self._game_revive = None
@@ -15,6 +14,7 @@ class Hotkeys:
 
     self._macro_revive = None
     self._macro_combo = None
+    self.load_config()
 
   @property
   def game_revive(self):
@@ -23,6 +23,7 @@ class Hotkeys:
   @game_revive.setter
   def game_revive(self, value):
     self._game_revive = value
+    self.save_config()
 
   @property
   def game_medicine(self):
@@ -31,6 +32,7 @@ class Hotkeys:
   @game_medicine.setter
   def game_medicine(self, value):
     self._game_medicine = value
+    self.save_config()
 
   @property
   def game_pokeball(self):
@@ -39,6 +41,7 @@ class Hotkeys:
   @game_pokeball.setter
   def game_pokeball(self, value):
     self._game_pokeball = value
+    self.save_config()
 
   @property
   def game_combo(self):
@@ -47,6 +50,7 @@ class Hotkeys:
   @game_combo.setter
   def game_combo(self, value: list[str | int]):
     self._game_combo = value
+    self.save_config()
 
   @property
   def macro_revive(self):
@@ -55,6 +59,7 @@ class Hotkeys:
   @macro_revive.setter
   def macro_revive(self, value):
     self._macro_revive = value
+    self.save_config()
 
   @property
   def macro_combo(self):
@@ -63,6 +68,7 @@ class Hotkeys:
   @macro_combo.setter
   def macro_combo(self, value):
     self._macro_combo = value
+    self.save_config()
 
   @property
   def position(self):
@@ -71,30 +77,34 @@ class Hotkeys:
   @position.setter
   def position(self, value):
     self._position = value
-
-  def save_config(self):
-    """Salva as configurações no storage."""
-    self.storage.save_game_keys(
-      self.game_revive,
-      self.game_medicine,
-      self.game_pokeball,
-      self.game_combo,
-      self.position
-    )
-    self.storage.save_macro_keys(
-      self.macro_revive,
-      self.macro_combo
-    )
+    self.save_config()
 
   def load_config(self):
-    """Carrega as configurações salvas."""
-    game_keys = self.storage.load_game_keys()
-    if game_keys:
-      (self.game_revive,
-      self.game_medicine,
-      self.game_pokeball,
-      self.game_combo,
-      self.position) = game_keys
-    macro_keys = self.storage.load_macro_keys()
-    if macro_keys:
-      (self.macro_revive, self.macro_combo) = macro_keys
+    """Carrega as configurações de um arquivo JSON."""
+    try:
+        with open("config.json", "r") as file:
+            self.config = json.load(file)
+    except FileNotFoundError:
+        self.config = {}
+
+    # Carregar as configurações individuais
+    self.game_revive = self.config.get("game_revive")
+    self.game_medicine = self.config.get("game_medicine")
+    self.game_pokeball = self.config.get("game_pokeball")
+    self.game_combo = self.config.get("game_combo", [])
+    self.position = self.config.get("position")
+    self.macro_revive = self.config.get("macro_revive")
+    self.macro_combo = self.config.get("macro_combo")
+
+  def save_config(self):
+    """Salva as configurações no arquivo JSON."""
+    self.config["game_revive"] = self.game_revive
+    self.config["game_medicine"] = self.game_medicine
+    self.config["game_pokeball"] = self.game_pokeball
+    self.config["game_combo"] = self.game_combo
+    self.config["position"] = self.position
+    self.config["macro_revive"] = self.macro_revive
+    self.config["macro_combo"] = self.macro_combo
+
+    with open("config.json", "w") as file:
+      json.dump(self.config, file, indent=4)

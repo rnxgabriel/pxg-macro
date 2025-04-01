@@ -1,61 +1,48 @@
 import time
-import mouse
 import keyboard
-import pyautogui
+import win32api  # type: ignore
+import win32con  # type: ignore
 
-from core.Hotkeys import Hotkeys
+from ui.Ui import Ui
 
+class Macro(Ui):
+  def __init__(self):
+    super().__init__()
 
-class Macro:
-  def __init__(self, hotkeys: Hotkeys ):
-    self.hotkeys = hotkeys
-
-  def execute_revive(self):
-    """
-    Executa o processo de reviver o Pokémon.
-    """
-    if self.hotkeys.position and self.hotkeys.game_revive and self.hotkeys.game_pokeball:
-      print("[LOG] ⏳ Iniciando revive...")
-      current_mouse_pos = pyautogui.position()
-
-      keyboard.press_and_release(self.hotkeys.game_pokeball)
-      time.sleep(0.2)
-
-      pyautogui.moveTo(self.hotkeys.position[0], self.hotkeys.position[1], duration=0)
-      time.sleep(0.1)
-
-      keyboard.press_and_release(self.hotkeys.game_revive)
-      time.sleep(0.2)
-      mouse.click(button="left")
-      time.sleep(0.2)
-
-      keyboard.press_and_release(self.hotkeys.game_pokeball)
-      time.sleep(0.2)
-
-      pyautogui.moveTo(current_mouse_pos[0], current_mouse_pos[1], duration=0)
-
-      print("[LOG] ✅ Revive concluído.")
-    else:
-      print("[LOG] ⚠️ Configuração incompleta. Revive não pode ser executado.")
-
-  def execute_combo(self, medicine=False):
+  def perform_combo(self, use_medicine_in_combo: bool):
     """
     Executa o combo, pressionando cada tecla da lista combo_keys, opcionalmente usando medicine.
     """
-    print(f"⏳ Executando combo...")
-    if medicine: self.execute_medicine()
-    for key in self.hotkeys.game_combo:
+    keyboard.press_and_release("alt+1")
+    for key in self.game_combo:
+      if use_medicine_in_combo:
+        self.perform_medicine()
       keyboard.press_and_release(key)
       time.sleep(0.6)
-    self.execute_revive()
-    print("✅ Combo finalizado.")
+    self.perform_revive()
+    keyboard.press_and_release("alt+3")
 
-  def execute_medicine(self):
-    """
-    Executa o uso de medicine
-    """
-    if self.hotkeys.game_medicine is not None:
-      keyboard.press_and_release(self.hotkeys.game_medicine)
-      print("[LOG] ✅ Medicine Utilizado.")
-      return
-    print("[LOG] ⚠️ Configuração incompleta. Medicine nao pode ser executado.")
+  def perform_medicine(self):
+    if self.game_medicine:
+      keyboard.press_and_release(self.game_medicine)
+
+  def perform_revive(self):
+    """Executa o processo de reviver o Pokémon (irá mover o cursor para clicar na posição)."""
+    if self.position and self.game_revive and self.game_pokeball:
+      current_pos = win32api.GetCursorPos()
+      keyboard.press_and_release(self.game_pokeball)
+      time.sleep(0.2)
+
+      keyboard.press_and_release(self.game_revive)
+      time.sleep(0.3)
+
+      x, y = self.position
+      # Move o cursor para a posição salva e clica
+      win32api.SetCursorPos((x, y))
+      win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+      win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+      time.sleep(0.2)
+
+      keyboard.press_and_release(self.game_pokeball)
+      win32api.SetCursorPos(current_pos)
+      time.sleep(0.2)

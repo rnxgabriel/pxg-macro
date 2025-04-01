@@ -1,3 +1,4 @@
-from ui.Ui import Ui
+from core.App import App
 
-def main(): Ui().loop()
+
+if __name__ == "__main__": App()
