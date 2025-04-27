@@ -1,10 +1,18 @@
+import os
 import json
-import keyboard
-import mouse
+import sys
+
+
+def resource_path(relative_path):
+  """Retorna o caminho absoluto, funcionando tanto com PyInstaller quanto em dev."""
+  if hasattr(sys, '_MEIPASS'):
+      return os.path.join(sys._MEIPASS, relative_path) # type: ignore
+  return os.path.join(os.path.abspath("."), relative_path)
 
 
 class Hotkeys:
   def __init__(self):
+    self.path = './macro-config/hotkeys.json'
     self._position = None
 
     self._game_revive = None
@@ -82,19 +90,20 @@ class Hotkeys:
   def load_config(self):
     """Carrega as configurações de um arquivo JSON."""
     try:
-        with open("config.json", "r") as file:
+        with open(self.path, "r") as file:
             self.config = json.load(file)
     except FileNotFoundError:
+        os.makedirs(os.path.dirname(self.path), exist_ok=True)
         self.config = {}
 
     # Carregar as configurações individuais
-    self.game_revive = self.config.get("game_revive")
-    self.game_medicine = self.config.get("game_medicine")
-    self.game_pokeball = self.config.get("game_pokeball")
-    self.game_combo = self.config.get("game_combo", [])
-    self.position = self.config.get("position")
-    self.macro_revive = self.config.get("macro_revive")
-    self.macro_combo = self.config.get("macro_combo")
+    self._game_medicine = self.config.get("game_medicine")
+    self._game_revive = self.config.get("game_revive")
+    self._game_pokeball = self.config.get("game_pokeball")
+    self._game_combo = self.config.get("game_combo", [])
+    self._position = self.config.get("position")
+    self._macro_revive = self.config.get("macro_revive")
+    self._macro_combo = self.config.get("macro_combo")
 
   def save_config(self):
     """Salva as configurações no arquivo JSON."""
@@ -106,5 +115,5 @@ class Hotkeys:
     self.config["macro_revive"] = self.macro_revive
     self.config["macro_combo"] = self.macro_combo
 
-    with open("config.json", "w") as file:
+    with open(self.path, "w") as file:
       json.dump(self.config, file, indent=4)

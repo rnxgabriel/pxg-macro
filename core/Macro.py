@@ -5,6 +5,7 @@ import win32con  # type: ignore
 
 from ui.Ui import Ui
 
+
 class Macro(Ui):
   def __init__(self):
     super().__init__()
@@ -31,17 +32,17 @@ class Macro(Ui):
     if self.position and self.game_revive and self.game_pokeball:
       current_pos = win32api.GetCursorPos()
       keyboard.press_and_release(self.game_pokeball)
-      time.sleep(0.2)
+      time.sleep(0.4)
 
       keyboard.press_and_release(self.game_revive)
-      time.sleep(0.3)
+      time.sleep(0.4)
 
       x, y = self.position
       # Move o cursor para a posição salva e clica
       win32api.SetCursorPos((x, y))
       win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
       win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-      time.sleep(0.2)
+      time.sleep(0.4)
 
       keyboard.press_and_release(self.game_pokeball)
       win32api.SetCursorPos(current_pos)
